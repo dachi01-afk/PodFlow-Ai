@@ -1,0 +1,37 @@
+{
+  "topics": [
+    {
+      "id": 1,
+      "keyword": "Strategi Keuangan Mikro untuk Usaha Kecil",
+      "category": "finance",
+      "trending_score": 85,
+      "related_angles": [
+        "Pinjaman modal usaha",
+        "Tabungan digital",
+        "Investasi untuk pemula"
+      ]
+    },
+    {
+      "id": 2,
+      "keyword": "Tips Productivity Kerja dari Rumah",
+      "category": "lifestyle",
+      "trending_score": 90,
+      "related_angles": [
+        "Time blocking technique",
+        "Ergonomi workspace",
+        "Work-life balance"
+      ]
+    },
+    {
+      "id": 3,
+      "keyword": "Tren Teknologi AI di Indonesia 2026",
+      "category": "technology",
+      "trending_score": 95,
+      "related_angles": [
+        "AI untuk bisnis",
+        "ChatGPT vs lokal AI",
+        "Etika AI"
+      ]
+    }
+  ]
+}
