@@ -2,8 +2,7 @@
 """PodFlow AI - Autonomous Podcast Network"""
 
 import sys
-import json
-from pipeline import PipelineOrchestrator
+from crew import create_crew
 from dashboard import CLIDashboard
 from data import TOPICS
 
@@ -32,22 +31,16 @@ def main():
         sys.exit(1)
     
     dashboard = CLIDashboard()
-    pipeline = PipelineOrchestrator(status_callback=dashboard.update_status)
-    
     dashboard.start(topic)
     
     try:
-        results = pipeline.run(topic)
+        crew = create_crew(topic)
+        result = crew.kickoff(inputs={"topic": topic})
         
         print("\n" + "="*60)
-        print("OUTPUT FILES:")
-        print(f"  Audio: {results.get('audio_path', 'N/A')}")
-        print(f"  Metadata: {results.get('metadata', {}).get('_file_path', 'output/metadata/')}")
-        print(f"  Social: {results.get('social', {}).get('_file_path', 'output/social/')}")
+        print("PIPELINE COMPLETED!")
         print("="*60)
-        
-        print("\nPROMPT ARCHITECTURE:")
-        print("  See docs/prompt_architecture.md for details")
+        print(result)
         
         dashboard.finish()
         
