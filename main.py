@@ -91,6 +91,17 @@ async def episode_page(request: Request, episode_id: str):
     return templates.TemplateResponse("episode.html", {"request": request, "episode_id": episode_id})
 
 
+@app.get("/partials/episode/{episode_id}", response_class=HTMLResponse)
+async def episode_detail_partial(request: Request, episode_id: str):
+    supabase = __import__('app.core.supabase_client', fromlist=['get_supabase']).get_supabase()
+    result = supabase.table("episodes").select("*").eq("id", episode_id).execute()
+    episode = result.data[0] if result.data else None
+    return templates.TemplateResponse("partials/episode_detail.html", {
+        "request": request,
+        "episode": episode
+    })
+
+
 @app.get("/audio/{filename}")
 async def serve_audio(filename: str):
     file_path = os.path.join(AUDIO_DIR, filename)

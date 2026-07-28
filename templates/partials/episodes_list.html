@@ -1,44 +1,66 @@
 {% if episodes %}
 <div class="space-y-4">
     {% for episode in episodes %}
-    <div class="bg-gray-700 p-4 rounded-lg">
+    <div class="bg-gray-700 p-4 rounded-lg hover:bg-gray-650 transition">
         <div class="flex justify-between items-start">
             <div class="flex-1">
-                <h3 class="text-lg font-semibold mb-1">🎯 {{ episode.topic }}</h3>
-                <div class="flex items-center space-x-4 text-sm text-gray-400">
-                    <span class="flex items-center">
-                        <span class="w-2 h-2 rounded-full mr-2 
-                            {% if episode.status == 'completed' %}bg-green-400
-                            {% elif episode.status == 'failed' %}bg-red-400
-                            {% elif episode.status in ['researching', 'writing', 'producing', 'publishing'] %}bg-yellow-400 animate-pulse
-                            {% else %}bg-gray-400{% endif %}">
-                        </span>
-                        {{ episode.status|title }}
+                <div class="flex items-center mb-2">
+                    <span class="w-3 h-3 rounded-full mr-2 
+                        {% if episode.status == 'completed' %}bg-green-400
+                        {% elif episode.status == 'failed' %}bg-red-400
+                        {% elif episode.status in ['researching', 'writing', 'producing', 'publishing'] %}bg-yellow-400 animate-pulse
+                        {% else %}bg-gray-400{% endif %}">
+                    </span>
+                    <h3 class="text-lg font-semibold">{{ episode.topic }}</h3>
+                </div>
+                <div class="flex items-center space-x-4 text-sm text-gray-400 ml-5">
+                    <span class="uppercase text-xs font-medium px-2 py-1 rounded
+                        {% if episode.status == 'completed' %}bg-green-900 text-green-300
+                        {% elif episode.status == 'failed' %}bg-red-900 text-red-300
+                        {% elif episode.status in ['researching', 'writing', 'producing', 'publishing'] %}bg-yellow-900 text-yellow-300
+                        {% else %}bg-gray-600 text-gray-300{% endif %}">
+                        {{ episode.status }}
                     </span>
                     <span>{{ episode.created_at[:10] }}</span>
+                    {% if episode.metadata and episode.metadata.get('title') %}
+                    <span class="text-purple-400">{{ episode.metadata.title }}</span>
+                    {% endif %}
                 </div>
                 {% if episode.status in ['researching', 'writing', 'producing', 'publishing'] %}
-                <div class="mt-2 w-full bg-gray-600 rounded-full h-2">
-                    <div class="bg-purple-500 h-2 rounded-full progress-bar" 
-                         style="width: {% if episode.status == 'researching' %}25{% elif episode.status == 'writing' %}50{% elif episode.status == 'producing' %}75{% else %}90{% endif %}%"></div>
+                <div class="mt-3 ml-5">
+                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                        <span>Progress</span>
+                        <span>{% if episode.status == 'researching' %}25%{% elif episode.status == 'writing' %}50%{% elif episode.status == 'producing' %}75%{% else %}90%{% endif %}</span>
+                    </div>
+                    <div class="w-full bg-gray-600 rounded-full h-2">
+                        <div class="bg-purple-500 h-2 rounded-full progress-bar" 
+                             style="width: {% if episode.status == 'researching' %}25{% elif episode.status == 'writing' %}50{% elif episode.status == 'producing' %}75{% else %}90{% endif %}%"></div>
+                    </div>
                 </div>
                 {% endif %}
             </div>
-            <div class="flex space-x-2 ml-4">
+            <div class="flex flex-col space-y-2 ml-4">
+                <a href="/episode/{{ episode.id }}" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-sm text-center font-medium">Detail →</a>
                 {% if episode.status == 'completed' %}
-                <a href="/episode/{{ episode.id }}" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">▶ Play</a>
+                    {% if episode.audio_url %}
+                    <a href="{{ episode.audio_url }}" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm text-center font-medium" title="Play Audio">▶ Play</a>
+                    {% endif %}
+                    {% if episode.metadata and episode.metadata.get('video_url') %}
+                    <a href="{{ episode.metadata.video_url }}" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm text-center font-medium" title="Play Video">🎬 Video</a>
+                    {% endif %}
                 {% endif %}
-                <a href="/episode/{{ episode.id }}" class="bg-gray-600 hover:bg-gray-500 px-3 py-1 rounded text-sm">Detail</a>
-                <button onclick="deleteEpisode('{{ episode.id }}')" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">🗑️</button>
+                <button onclick="deleteEpisode('{{ episode.id }}')" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm text-center font-medium" title="Delete">🗑️</button>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
 {% else %}
-<div class="text-center text-gray-400 py-8">
-    <p class="text-lg mb-2">Belum ada episode</p>
-    <p class="text-sm">Klik "+ New Episode" untuk membuat episode pertama</p>
+<div class="text-center text-gray-400 py-12">
+    <div class="text-6xl mb-4">🎙️</div>
+    <p class="text-xl mb-2">Belum ada episode</p>
+    <p class="text-sm mb-4">Buat episode pertama kamu untuk memulai</p>
+    <a href="/create" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg inline-block font-bold">+ New Episode</a>
 </div>
 {% endif %}
 
