@@ -1,0 +1,24 @@
+/* Custom styles for PodFlow AI */
+
+/* Progress bar animation */
+.progress-bar {
+    transition: width 0.5s ease-in-out;
+}
+
+/* Status badges */
+.status-pending { @apply bg-gray-500; }
+.status-researching { @apply bg-blue-500; }
+.status-writing { @apply bg-yellow-500; }
+.status-producing { @apply bg-orange-500; }
+.status-publishing { @apply bg-purple-500; }
+.status-completed { @apply bg-green-500; }
+.status-failed { @apply bg-red-500; }
+
+/* Pulse animation for processing */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
