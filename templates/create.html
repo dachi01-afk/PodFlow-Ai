@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Create Episode{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Create New Episode</h1>
+    
+    <form hx-post="/api/episodes" 
+          hx-swap="none"
+          hx-on::after-request="if(event.detail.successful) window.location='/'"
+          class="bg-gray-800 p-6 rounded-lg space-y-4">
+        
+        <div>
+            <label class="block text-gray-400 mb-2">Channel</label>
+            <select name="channel_id" required
+                    class="w-full bg-gray-700 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500">
+                <option value="">Select Channel</option>
+            </select>
+        </div>
+        
+        <div>
+            <label class="block text-gray-400 mb-2">Topic</label>
+            <input type="text" name="topic" required
+                   placeholder="Contoh: Strategi Keuangan Mikro untuk Usaha Kecil"
+                   class="w-full bg-gray-700 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500">
+        </div>
+        
+        <button type="submit" 
+                class="w-full bg-purple-600 hover:bg-purple-700 py-3 rounded font-bold">
+            🚀 Create & Start Production
+        </button>
+    </form>
+</div>
+{% endblock %}
