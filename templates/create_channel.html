@@ -6,7 +6,7 @@
 <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold mb-6">Create New Channel</h1>
     
-    <form hx-post="/api/channels" 
+    <form hx-post="/api/channels/" 
           hx-swap="none"
           hx-on::after-request="if(event.detail.successful) window.location='/'"
           class="bg-gray-800 p-6 rounded-lg space-y-4">

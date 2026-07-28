@@ -182,7 +182,13 @@
             {% elif episode.status == 'failed' %}
             <button onclick="deleteEpisode('{{ episode.id }}')" class="bg-red-600 hover:bg-red-700 px-6 py-3 rounded font-bold">🗑️ Delete Failed Episode</button>
             {% else %}
-            <a href="/api/pipeline/start/{{ episode.id }}" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded font-bold">🚀 Start Production</a>
+            <button
+                hx-post="/api/pipeline/start/{{ episode.id }}"
+                hx-swap="none"
+                hx-on::after-request="if(event.detail.successful) window.location.reload()"
+                class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded font-bold">
+                🚀 Start Production
+            </button>
             {% endif %}
         </div>
     </div>

@@ -6,6 +6,7 @@ from app.agents.audio import generate_episode_audio
 from app.agents.distribution import generate_metadata, publish_episode
 from app.utils.audio import generate_waveform_video
 import os
+import shutil
 from datetime import datetime, timezone
 
 AUDIO_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "audio_files")
@@ -98,13 +99,29 @@ def run_audio_agent(self, episode_id: str, script: dict):
         ).execute()
 
         dialogues = script.get("dialogues", [])
+        result = (
+            supabase.table("episodes")
+            .select("topic")
+            .eq("id", episode_id)
+            .execute()
+        )
+
+        topic = "AI Generated Podcast"
+
+        if result.data:
+            topic = result.data[0]["topic"]
         audio_path = generate_episode_audio(dialogues)
 
         final_audio_path = os.path.join(AUDIO_DIR, f"{episode_id}.mp3")
-        os.rename(audio_path, final_audio_path)
+
+        shutil.move(audio_path, final_audio_path)
 
         video_path = os.path.join(VIDEO_DIR, f"{episode_id}.mp4")
-        generate_waveform_video(final_audio_path, video_path)
+        generate_waveform_video(
+            audio_path=final_audio_path,
+            output_path=video_path,
+            title=topic,
+        )
 
         audio_url = f"/audio/{episode_id}.mp3"
         video_url = f"/video/{episode_id}.mp4"

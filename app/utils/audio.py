@@ -2,6 +2,7 @@ import subprocess
 import tempfile
 import os
 from typing import List
+from app.utils.video import VideoComposer
 
 
 def concatenate_audio_files(audio_files: List[str], output_path: str) -> str:
@@ -58,43 +59,15 @@ def generate_silence(duration: float, output_path: str) -> str:
     subprocess.run(cmd, check=True, capture_output=True)
     return output_path
 
+def generate_waveform_video(
+    audio_path: str,
+    output_path: str,
+    title: str = "AI Generated Podcast",
+) -> str:
+    composer = VideoComposer()
 
-def generate_waveform_video(audio_path: str, output_path: str) -> str:
-    """Generate 9:16 waveform video from audio using FFmpeg showwaves"""
-
-    video_only = output_path + ".tmp.mp4"
-
-    try:
-        cmd_video = [
-            "ffmpeg",
-            "-i", audio_path,
-            "-filter_complex",
-            "[0:a]showwaves=s=1080x1920:mode=cline:rate=24:colors=0x00D4FF[v]",
-            "-map", "[v]",
-            "-c:v", "libx264",
-            "-preset", "ultrafast",
-            "-crf", "32",
-            "-pix_fmt", "yuv420p",
-            "-an",
-            video_only,
-            "-y"
-        ]
-        subprocess.run(cmd_video, check=True, capture_output=True)
-
-        cmd_mux = [
-            "ffmpeg",
-            "-i", video_only,
-            "-i", audio_path,
-            "-c:v", "copy",
-            "-c:a", "aac",
-            "-b:a", "192k",
-            "-shortest",
-            output_path,
-            "-y"
-        ]
-        subprocess.run(cmd_mux, check=True, capture_output=True)
-    finally:
-        if os.path.exists(video_only):
-            os.unlink(video_only)
-
-    return output_path
+    return composer.compose(
+        audio_path=audio_path,
+        output_path=output_path,
+        title=title,
+    )

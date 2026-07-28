@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Form
 from datetime import datetime, timezone
 import uuid
 
 from app.core.supabase_client import get_supabase
-from app.models.episode import EpisodeCreate, EpisodeResponse, EpisodeList
+from app.models.episode import EpisodeResponse, EpisodeList
 
 router = APIRouter()
 
@@ -17,44 +17,56 @@ async def list_episodes():
         .order("created_at", desc=True)
         .execute()
     )
-    episodes = []
-    for row in result.data:
-        episodes.append(EpisodeResponse(**row))
+
+    episodes = [EpisodeResponse(**row) for row in result.data]
+
     return EpisodeList(episodes=episodes, total=len(episodes))
 
 
 @router.post("/", response_model=EpisodeResponse)
-async def create_episode(episode: EpisodeCreate):
+async def create_episode(
+    channel_id: str = Form(...),
+    topic: str = Form(...),
+):
     supabase = get_supabase()
+
     now = datetime.now(timezone.utc).isoformat()
+
     data = {
         "id": str(uuid.uuid4()),
-        "channel_id": episode.channel_id,
-        "topic": episode.topic,
+        "channel_id": channel_id,
+        "topic": topic,
         "status": "pending",
         "created_at": now,
         "updated_at": now,
     }
+
     result = supabase.table("episodes").insert(data).execute()
+
     return EpisodeResponse(**result.data[0])
 
 
 @router.get("/{episode_id}", response_model=EpisodeResponse)
 async def get_episode(episode_id: str):
     supabase = get_supabase()
+
     result = (
         supabase.table("episodes")
         .select("*")
         .eq("id", episode_id)
         .execute()
     )
+
     if not result.data:
         raise HTTPException(status_code=404, detail="Episode not found")
+
     return EpisodeResponse(**result.data[0])
 
 
 @router.delete("/{episode_id}")
 async def delete_episode(episode_id: str):
     supabase = get_supabase()
+
     supabase.table("episodes").delete().eq("id", episode_id).execute()
+
     return {"status": "deleted"}
