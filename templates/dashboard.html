@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold mb-2">Podcast Dashboard</h1>
+    <p class="text-gray-400">Kelola episode podcast Anda secara otonom</p>
+</div>
+
+<!-- Stats -->
+<div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="text-2xl font-bold text-purple-400">--</div>
+        <div class="text-gray-400">Total Episodes</div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="text-2xl font-bold text-green-400">--</div>
+        <div class="text-gray-400">Completed</div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="text-2xl font-bold text-yellow-400">--</div>
+        <div class="text-gray-400">Processing</div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="text-2xl font-bold text-red-400">--</div>
+        <div class="text-gray-400">Failed</div>
+    </div>
+</div>
+
+<!-- Episodes List -->
+<div id="episodes-list" 
+     hx-get="/api/episodes" 
+     hx-trigger="refresh from:body" 
+     hx-swap="innerHTML"
+     class="bg-gray-800 rounded-lg p-4">
+    <div class="text-center text-gray-400 py-8">Loading episodes...</div>
+</div>
+
+{% endblock %}
