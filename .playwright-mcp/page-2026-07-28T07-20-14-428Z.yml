@@ -1,0 +1,88 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "🎙️ PodFlow AI" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Dashboard" [ref=e6] [cursor=pointer]:
+          - /url: /
+        - link "Channels" [ref=e7] [cursor=pointer]:
+          - /url: /create-channel
+        - link "+ New Episode" [ref=e8] [cursor=pointer]:
+          - /url: /create
+  - main [ref=e9]:
+    - generic [ref=e10]:
+      - heading "Podcast Dashboard" [level=1] [ref=e11]
+      - paragraph [ref=e12]: Kelola episode podcast Anda secara otonom
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]: "3"
+        - generic [ref=e17]: Total Episodes
+      - generic [ref=e18]:
+        - generic [ref=e19]: "3"
+        - generic [ref=e20]: Completed
+      - generic [ref=e21]:
+        - generic [ref=e22]: "0"
+        - generic [ref=e23]: Processing
+      - generic [ref=e24]:
+        - generic [ref=e25]: "0"
+        - generic [ref=e26]: Failed
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - heading "Channels" [level=2] [ref=e29]
+        - link "+ New Channel" [ref=e30] [cursor=pointer]:
+          - /url: /create-channel
+      - generic [ref=e32]:
+        - generic [ref=e33]:
+          - generic [ref=e34]: Tech Talk Indonesia • Technology
+          - generic [ref=e35]: 2026-07-28
+        - generic [ref=e36]:
+          - generic [ref=e37]: PodFlow Test Channel • Technology
+          - generic [ref=e38]: 2026-07-28
+        - generic [ref=e39]:
+          - generic [ref=e40]: Test Fix • Tech
+          - generic [ref=e41]: 2026-07-28
+    - generic [ref=e42]:
+      - generic [ref=e43]:
+        - heading "Episodes" [level=2] [ref=e44]
+        - link "+ New Episode" [ref=e45] [cursor=pointer]:
+          - /url: /create
+      - generic [ref=e47]:
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - heading "Tren Teknologi 2026" [level=3] [ref=e53]
+            - generic [ref=e54]:
+              - generic [ref=e55]: completed
+              - generic [ref=e56]: 2026-07-28
+          - generic [ref=e57]:
+            - link "Detail →" [ref=e58] [cursor=pointer]:
+              - /url: /episode/09d31674-7229-47c1-b5e6-9ac850739b5b
+            - button "🗑️" [ref=e59] [cursor=pointer]
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - heading "Manfaat AI dalam pendidikan" [level=3] [ref=e65]
+            - generic [ref=e66]:
+              - generic [ref=e67]: completed
+              - generic [ref=e68]: 2026-07-28
+              - generic [ref=e69]: "PodFlow: Manfaat AI dalam pendidikan"
+          - generic [ref=e70]:
+            - link "Detail →" [ref=e71] [cursor=pointer]:
+              - /url: /episode/03d4b2c6-cda9-401b-b56c-14eb945e4399
+            - link "▶ Play" [ref=e72] [cursor=pointer]:
+              - /url: /audio/03d4b2c6-cda9-401b-b56c-14eb945e4399.mp3
+            - link "🎬 Video" [ref=e73] [cursor=pointer]:
+              - /url: /video/03d4b2c6-cda9-401b-b56c-14eb945e4399.mp4
+            - button "🗑️" [ref=e74] [cursor=pointer]
+        - generic [ref=e76]:
+          - generic [ref=e77]:
+            - heading "Strategi Keuangan untuk Usaha kecil" [level=3] [ref=e80]
+            - generic [ref=e81]:
+              - generic [ref=e82]: completed
+              - generic [ref=e83]: 2026-07-28
+              - generic [ref=e84]: "PodFlow: Strategi Keuangan untuk Usaha kecil"
+          - generic [ref=e85]:
+            - link "Detail →" [ref=e86] [cursor=pointer]:
+              - /url: /episode/2ebf77cd-05ca-4d49-9204-840a3baf2caf
+            - link "▶ Play" [ref=e87] [cursor=pointer]:
+              - /url: /audio/2ebf77cd-05ca-4d49-9204-840a3baf2caf.mp3
+            - button "🗑️" [ref=e88] [cursor=pointer]

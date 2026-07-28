@@ -27,7 +27,18 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             setInterval(function() {
-                htmx.trigger('#episodes-list', 'refresh');
+                const episodesList = document.getElementById('episodes-list');
+                if (episodesList) {
+                    htmx.trigger('#episodes-list', 'refresh');
+                }
+                const statsContainer = document.getElementById('stats-container');
+                if (statsContainer) {
+                    htmx.trigger('#stats-container', 'refresh');
+                }
+                const channelsContainer = document.getElementById('channels-container');
+                if (channelsContainer) {
+                    htmx.trigger('#channels-container', 'refresh');
+                }
             }, 5000);
         });
     </script>
