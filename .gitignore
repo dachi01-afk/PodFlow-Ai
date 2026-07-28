@@ -285,3 +285,4 @@ git-ignore.py
 # Session Cookie Tiktok
 app/auth/www_tiktok_com_cookies.json
 app/auth/chrome_profile/
+!app/auth/www_tiktok_com_cookies_example.json
