@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Episode Detail{% endblock %}
+
+{% block content %}
+<div id="episode-detail" 
+     hx-get="/api/episodes/{{ episode_id }}" 
+     hx-trigger="load, every 5s" 
+     hx-swap="innerHTML">
+    <div class="text-center text-gray-400 py-8">Loading episode...</div>
+</div>
+{% endblock %}
