@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+  <channel>
+    <title>Marvel</title>
+    <description>Podcast by Marvel</description>
+    <language>id</language>
+    <itunes:author>Marvel</itunes:author>
+    <item>
+      <title>deskripsi dari Universe marvel</title>
+      <description/>
+      <enclosure url="/audio/5916b36e-bd11-410a-bd3c-30a81731b51a.mp3" type="audio/mpeg" length="0"/>
+      <pubDate>2026-07-28T16:03:19.88277+00:00</pubDate>
+      <itunes:duration>00:00</itunes:duration>
+    </item>
+  </channel>
+</rss>

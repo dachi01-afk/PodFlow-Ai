@@ -2,6 +2,7 @@ from celery_app import celery_app
 from app.core.supabase_client import get_supabase
 from app.agents.research import research_topic
 from app.agents.scriptwriter import generate_script
+from app.agents.caption import generate_tiktok_caption
 from app.agents.audio import generate_episode_audio
 from app.agents.distribution import generate_metadata, publish_episode
 from app.utils.audio import generate_waveform_video
@@ -74,8 +75,20 @@ def run_scriptwriter_agent(self, episode_id: str, research: dict):
 
         script_result = generate_script(topic, research)
 
+        caption = generate_tiktok_caption(topic, script_result)
+
+        print("\n========== GENERATED TIKTOK CAPTION ==========")
+        print(caption)
+        print("=============================================\n")
+
         supabase.table("episodes").update(
-            {"script": {"dialogues": script_result}, "status": "producing"}
+            {
+                "script": {
+                    "dialogues": script_result,
+                    "tiktok_caption": caption,
+                },
+                "status": "producing",
+            }
         ).eq("id", episode_id).execute()
 
         celery_app.send_task(

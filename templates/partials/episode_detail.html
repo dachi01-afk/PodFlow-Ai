@@ -176,6 +176,11 @@
             {% if episode.metadata and episode.metadata.get('video_url') %}
             <a href="{{ episode.metadata.video_url }}" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded font-bold flex-1 text-center">🎬 Play Video</a>
             {% endif %}
+            <button
+                onclick="uploadToTikTok('{{ episode.id }}')"
+                class="bg-pink-600 hover:bg-pink-700 px-6 py-3 rounded font-bold">
+                📱 Upload to TikTok
+            </button>
             <button onclick="deleteEpisode('{{ episode.id }}')" class="bg-red-600 hover:bg-red-700 px-6 py-3 rounded font-bold">🗑️ Delete</button>
             {% elif episode.status in ['researching', 'writing', 'producing', 'publishing'] %}
             <div class="text-yellow-400 animate-pulse">⏳ Processing... ({{ episode.status }})</div>
@@ -201,6 +206,21 @@ function deleteEpisode(id) {
             .then(() => window.location.href = '/');
     }
 }
+
+async function uploadToTikTok(id) {
+
+    const response = await fetch(
+        `/api/pipeline/upload/${id}`,
+        {
+            method: "POST"
+        }
+    );
+
+    const result = await response.json();
+
+    alert(result.message);
+}
+
 </script>
 {% else %}
 <div class="text-center text-gray-400 py-8">

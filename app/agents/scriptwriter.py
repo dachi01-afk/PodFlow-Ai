@@ -34,7 +34,7 @@ Format output harus berupa JSON array dengan struktur:
     }}
 ]
 
-Buat minimal 10 dialog dengan variasi emosi yang natural.
+Buat minimal 6 dialog dengan variasi emosi yang natural.
 Gunakan bahasa Indonesia sehari-hari dengan sedikit humor.
 Pastikan output berupa JSON array yang valid.
 """
