@@ -1,0 +1,19 @@
+{% if channels %}
+<div class="space-y-2">
+    {% for channel in channels %}
+    <div class="bg-gray-700 p-3 rounded flex justify-between items-center">
+        <div>
+            <span class="font-semibold">{{ channel.name }}</span>
+            {% if channel.niche %}
+            <span class="text-gray-400 text-sm ml-2">• {{ channel.niche }}</span>
+            {% endif %}
+        </div>
+        <span class="text-gray-500 text-sm">{{ channel.created_at[:10] }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center text-gray-400 py-4">
+    <p class="text-sm">Belum ada channel. Buat channel baru untuk memulai.</p>
+</div>
+{% endif %}

@@ -12,15 +12,16 @@
           class="bg-gray-800 p-6 rounded-lg space-y-4">
         
         <div>
-            <label class="block text-gray-400 mb-2">Channel</label>
+            <label class="block text-gray-400 mb-2">Channel *</label>
             <select name="channel_id" required
                     class="w-full bg-gray-700 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500">
                 <option value="">Select Channel</option>
             </select>
+            <p class="text-gray-500 text-sm mt-1">Belum ada channel? <a href="/create-channel" class="text-purple-400 hover:underline">Buat channel baru</a></p>
         </div>
         
         <div>
-            <label class="block text-gray-400 mb-2">Topic</label>
+            <label class="block text-gray-400 mb-2">Topic *</label>
             <input type="text" name="topic" required
                    placeholder="Contoh: Strategi Keuangan Mikro untuk Usaha Kecil"
                    class="w-full bg-gray-700 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500">
@@ -32,4 +33,21 @@
         </button>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/channels')
+        .then(response => response.json())
+        .then(data => {
+            const select = document.querySelector('select[name="channel_id"]');
+            const channels = data.channels || [];
+            channels.forEach(channel => {
+                const option = document.createElement('option');
+                option.value = channel.id;
+                option.textContent = channel.name + (channel.niche ? ` (${channel.niche})` : '');
+                select.appendChild(option);
+            });
+        });
+});
+</script>
 {% endblock %}

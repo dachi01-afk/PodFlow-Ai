@@ -31,6 +31,35 @@ async def dashboard(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
 
+@app.get("/partials/stats", response_class=HTMLResponse)
+async def stats_partial(request: Request):
+    supabase = __import__('app.core.supabase_client', fromlist=['get_supabase']).get_supabase()
+    result = supabase.table("episodes").select("status").execute()
+    episodes = result.data or []
+    total = len(episodes)
+    completed = sum(1 for e in episodes if e.get("status") == "completed")
+    failed = sum(1 for e in episodes if e.get("status") == "failed")
+    processing = total - completed - failed
+    return templates.TemplateResponse("partials/stats.html", {
+        "request": request,
+        "total": total,
+        "completed": completed,
+        "processing": processing,
+        "failed": failed
+    })
+
+
+@app.get("/partials/episodes", response_class=HTMLResponse)
+async def episodes_partial(request: Request):
+    supabase = __import__('app.core.supabase_client', fromlist=['get_supabase']).get_supabase()
+    result = supabase.table("episodes").select("*").order("created_at", desc=True).execute()
+    episodes = result.data or []
+    return templates.TemplateResponse("partials/episodes_list.html", {
+        "request": request,
+        "episodes": episodes
+    })
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -39,6 +68,22 @@ async def health():
 @app.get("/create", response_class=HTMLResponse)
 async def create_page(request: Request):
     return templates.TemplateResponse("create.html", {"request": request})
+
+
+@app.get("/create-channel", response_class=HTMLResponse)
+async def create_channel_page(request: Request):
+    return templates.TemplateResponse("create_channel.html", {"request": request})
+
+
+@app.get("/partials/channels", response_class=HTMLResponse)
+async def channels_partial(request: Request):
+    supabase = __import__('app.core.supabase_client', fromlist=['get_supabase']).get_supabase()
+    result = supabase.table("channels").select("*").execute()
+    channels = result.data or []
+    return templates.TemplateResponse("partials/channels_list.html", {
+        "request": request,
+        "channels": channels
+    })
 
 
 @app.get("/episode/{episode_id}", response_class=HTMLResponse)

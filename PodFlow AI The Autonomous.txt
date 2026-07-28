@@ -1,0 +1,149 @@
+
+PodFlow AI
+(The Autonomous Podcast Network)
+1. Deskripsi Proyek & Elevator Pitch
+PodFlow AI adalah sistem AI Showrunner end-to-end yang secara otonom meneliti
+topik yang sedang tren, menulis naskah podcast multi-host yang interaktif,
+memproduksi audio berkualitas studio dengan berbagai karakter suara, dan
+mengoptimalkan metadata untuk distribusi massal secara simultan. Ini bukan sekadar
+generator teks biasa, melainkan direktur kreatif otomatis yang mampu menjalankan
+ratusan channel podcast secara bersamaan tanpa intervensi manual yang konstan.
+
+
+2. Masalah Utama yang Diselesaikan
+Infrastruktur Produksi yang Manual: Proses pembuatan podcast konvensional
+membutuhkan waktu berhari-hari mulai dari riset data, penyusunan skrip, rekaman
+suara, editing audio (menghilangkan noise, menambahkan Background Music
+(BGM), dan Sound Effects (SFX)), hingga optimasi SEO.
+Hambatan
+Skalabilitas
+Konten:
+Kreator
+dan
+korporasi
+kesulitan
+untuk
+memperbesar skala (scale up) produksi konten audio secara konsisten tanpa
+mengorbankan kualitas emosi, dinamika percakapan, dan orisinalitas riset.
+
+
+3. Pembagian Peran & Tanggung Jawab Tim
+A. Backend & AI Infrastructure Engineer
+Multi-Agent Orchestration & State Management: Membangun pipeline orkestrasi
+agen otonom menggunakan framework seperti LangGraph, CrewAI, atau AutoGen.
+Engineer bertanggung jawab mengelola transisi data state antar agen secara
+asinkron.
+
+Integrasi LLM Engine (Qwen & Agnes AI):
+Mengintegrasikan model Qwen (misalnya seri Qwen 2.5) untuk penalaran
+tingkat tinggi, analisis riset tren berskala besar, serta penyusunan struktur
+naskah yang kompleks.
+
+Mengintegrasikan Agnes AI (seperti agnes-2.0-flash atau Agnes-SeaLLM)
+sebagai mesin pelokalan bahasa untuk menyusun dialek lokal, humor, slang
+yang natural, serta penyesuaian konteks budaya Indonesia/Asia Tenggara agar
+dialog tidak terasa kaku.
+
+Pipeline Asynchronous & Queue Management: Mengimplementasikan task queue
+menggunakan Celery + Redis atau RabbitMQ untuk menangani proses pembuatan
+audio, proses rendering FFmpeg, dan batching API call yang memakan waktu lama
+tanpa memblokir jalannya pipeline utama.
+
+Automated Audio Engineering & Publishing: Menyusun fungsi otomatis
+menggunakan FFmpeg (atau pustaka berbasis Python) untuk menggabungkan trek
+vokal, menerapkan audio ducking (mengecilkan volume musik latar saat vokal
+aktif), serta mengotomatisasi pembaruan RSS XML feed dinamis untuk di-upload
+langsung ke hosting podcast.
+
+B. Digital Marketer & AI Interaction Strategist
+System Prompt Engineering & Persona Design: Merancang arsitektur perintah
+(system prompt) yang sangat detail untuk agen Qwen dan Agnes AI. Menentukan
+profil psikografis host, tone of voice, gaya bahasa, serta memastikan taktik retensi
+pendengar (misalnya hook emosional dalam 30 detik pertama).
+Podcast SEO & Metadata Engineering: Melakukan riset kata kunci strategis dan
+menginstruksikan AI untuk memproduksi Judul, Deskripsi, dan Show Notes yang
+dioptimalkan bagi algoritma platform streaming besar (seperti Spotify dan Apple
+Podcasts).
+Omnichannel Growth & Content Repurposing: Merancang sistem otomatisasi
+pertumbuhan konten untuk memotong hasil audio menjadi potongan klip promosi,
+utas otomatis untuk media sosial (seperti X/Twitter), serta artikel mendalam untuk
+LinkedIn.
+Analytics & Ad Insertion Feedback Loop: Mengembangkan arsitektur penempatan
+slot iklan dinamis (dynamic ad slots) berbasis konteks naskah serta merancang
+alur umpan balik dari data performa pendengar untuk menyempurnakan prompt
+agen secara otomatis pada episode berikutnya.
+
+
+
+4. Arsitektur Teknis & Alur Kerja Sistem (Production Flow)
+[Trigger Keyword/Niche]
+AGENT 1: RESEARCH ENGINE (Powered by Qwen Engine)
+Scraping data tren Reddit, X, & Portal Berita
+Ekstraksi sentimen & fakta kunci
+Fakta & Tren Terfilte
+AGENT 2: DIALOGUE SCRIPTWRITER (Powered by Agnes AI)
+Injeksi gaya bahasa lokal, humor & narasi emosional
+Output: Struktur JSON dengan Tag Emosi & Jeda
+JSON Script dengan Metadata Emosi
+AGENT 3: AUDIO ENGINE & PRODUCTION PIPELINE
+Pemisahan Voice ID via ElevenLabs API
+Pemrosesan FFmpeg (Audio Ducking, BGM, SFX)
+File Audio MP3 Final Beresolusi Tinggi
+AGENT 4: METADATA & MASS DISTRIBUTION ENGINE
+Optimasi Judul & Deskripsi SEO
+Generasi RSS Feed XML Dinamis
+Publikasi otomatis ke Hosting Server
+
+
+1.
+Trigger Awal: Masukan berupa kata kunci atau topik spesifik oleh tim Marketer
+(misal: "Strategi Keuangan Mikro untuk Usaha Kecil di Indonesia").
+2.
+Tahap Riset (Agent 1 - Qwen): Agen meneliti dan mengumpulkan 5-10 artikel tren
+terbaru, menyaring hoaks, dan mengekstrak poin data penting ke dalam dokumen
+berbasis fakta.
+3.
+Tahap Penulisan Dialog (Agent 2 - Agnes AI): Dokumen fakta diolah menjadi naskah
+obrolan interaktif antara dua host atau lebih dengan karakter bertolak belakang
+(misal: Host A sebagai pakar formal dan Host B sebagai pemula yang kritis). Output
+yang dihasilkan wajib berupa format JSON terstruktur yang memuat dialog beserta
+petunjuk emosi, seperti:
+JSON
+"speaker": "Host_B",
+"emotion": "confused",
+"pause_duration": 1.5,
+"text": "Eh tapi bentar, emangnya aman ya kalau kita simpan aset di platform digital kayak
+gitu? Kan lagi banyak isu hacker."
+4.
+Tahap Produksi Audio (Agent 3 - Pipeline Otomatis): JSON dipecah berdasarkan
+Speaker ID, dikirim ke API generator suara (seperti ElevenLabs), lalu digabungkan
+menggunakan script FFmpeg dengan penambahan intro, outro, dan musik latar
+menggunakan algoritma ducking otomatis.
+5.
+Tahap Distribusi (Agent 4 - Metadata Engine): File MP3 final digabungkan dengan
+dokumen penunjang (Show Notes) ramah SEO, dibuatkan skrip XML untuk RSS feed,
+dan siap diunggah secara asinkron ke server distribusi.
+
+
+
+5. Target Deliverables untuk Hackathon
+Peserta hackathon wajib mempresentasikan dan mengumpulkan komponen berikut
+demi penilaian maksimal dari para juri:
+Live Technical Dashboard & Pipeline Demo: Demonstrasi langsung yang
+memperlihatkan visualisasi perpindahan tugas antar agen secara real-time (status
+proses riset, penulisan oleh Agnes AI, hingga rendering audio via task queue).
+Sistem harus membuktikan kemampuannya memproses banyak channel podcast
+secara paralel tanpa terjadi deadlock atau kegagalan penanganan API.
+Hasil Produksi Audio & Contoh Repurposing: Memutarkan demo audio berdurasi 1-2
+menit yang menunjukkan kelancaran intonasi, ketepatan jeda emosional, serta
+nuansa bahasa lokal yang natural. Tim juga harus menunjukkan draf tulisan hasil
+otomatisasi untuk media sosial pendukung (Show Notes, utas X, postingan
+LinkedIn).
+Arsitektur Prompt & Pengkondisian Model: Menampilkan skema penulisan system
+prompt terstruktur yang digunakan pada model Qwen dan Agnes AI untuk
+menghasilkan keluaran skrip yang konsisten sesuai identitas brand.
+Business, Monetization & Scalability Strategy Pitch Deck: Presentasi komersial
+mengenai bagaimana infrastruktur ini dapat disewakan secara B2B (SaaS untuk
+perusahaan/media), pemanfaatan slot iklan dinamis (dynamic ad insertion), serta
+efisiensi biaya operasional (cost-per-episode) dengan integrasi model Qwen dan
+Agnes AI dibanding proses produksi manual manusia.

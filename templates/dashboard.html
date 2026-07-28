@@ -9,32 +9,58 @@
 </div>
 
 <!-- Stats -->
-<div class="grid grid-cols-4 gap-4 mb-6">
-    <div class="bg-gray-800 p-4 rounded-lg">
-        <div class="text-2xl font-bold text-purple-400">--</div>
-        <div class="text-gray-400">Total Episodes</div>
-    </div>
-    <div class="bg-gray-800 p-4 rounded-lg">
-        <div class="text-2xl font-bold text-green-400">--</div>
-        <div class="text-gray-400">Completed</div>
-    </div>
-    <div class="bg-gray-800 p-4 rounded-lg">
-        <div class="text-2xl font-bold text-yellow-400">--</div>
-        <div class="text-gray-400">Processing</div>
-    </div>
-    <div class="bg-gray-800 p-4 rounded-lg">
-        <div class="text-2xl font-bold text-red-400">--</div>
-        <div class="text-gray-400">Failed</div>
+<div id="stats-container"
+     hx-get="/partials/stats" 
+     hx-trigger="load, every 5s" 
+     hx-swap="innerHTML">
+    <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-gray-800 p-4 rounded-lg animate-pulse">
+            <div class="text-2xl font-bold text-purple-400">--</div>
+            <div class="text-gray-400">Total Episodes</div>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg animate-pulse">
+            <div class="text-2xl font-bold text-green-400">--</div>
+            <div class="text-gray-400">Completed</div>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg animate-pulse">
+            <div class="text-2xl font-bold text-yellow-400">--</div>
+            <div class="text-gray-400">Processing</div>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg animate-pulse">
+            <div class="text-2xl font-bold text-red-400">--</div>
+            <div class="text-gray-400">Failed</div>
+        </div>
     </div>
 </div>
 
-<!-- Episodes List -->
-<div id="episodes-list" 
-     hx-get="/api/episodes" 
-     hx-trigger="refresh from:body" 
-     hx-swap="innerHTML"
-     class="bg-gray-800 rounded-lg p-4">
-    <div class="text-center text-gray-400 py-8">Loading episodes...</div>
+<!-- Channels Section -->
+<div class="mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Channels</h2>
+        <a href="/create-channel" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm">+ New Channel</a>
+    </div>
+    <div id="channels-container"
+         hx-get="/partials/channels" 
+         hx-trigger="load, every 10s" 
+         hx-swap="innerHTML"
+         class="bg-gray-800 rounded-lg p-4">
+        <div class="text-center text-gray-400 py-4">Loading channels...</div>
+    </div>
+</div>
+
+<!-- Episodes Section -->
+<div class="mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Episodes</h2>
+        <a href="/create" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-sm">+ New Episode</a>
+    </div>
+    <div id="episodes-list" 
+         hx-get="/partials/episodes" 
+         hx-trigger="load, every 5s" 
+         hx-swap="innerHTML"
+         class="bg-gray-800 rounded-lg p-4">
+        <div class="text-center text-gray-400 py-8">Loading episodes...</div>
+    </div>
 </div>
 
 {% endblock %}
