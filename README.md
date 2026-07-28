@@ -6,7 +6,7 @@
 
 Generate a complete podcast from a single topic—from research and scriptwriting to AI voice synthesis, video generation, caption generation, and automatic TikTok publishing.
 
-![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688)
 ![Celery](https://img.shields.io/badge/Celery-Task%20Queue-37814A)
 ![Playwright](https://img.shields.io/badge/Playwright-Automation-2EAD33)
@@ -20,14 +20,14 @@ Generate a complete podcast from a single topic—from research and scriptwritin
 
 PodFlow AI is an AI-powered podcast production pipeline that automates the entire content creation workflow.
 
-Starting from a single topic, the system performs:
+Starting from a single topic, the system can:
 
-- Topic research
-- Podcast script generation
-- TikTok caption generation
-- AI voice synthesis
-- Video rendering
-- Automatic TikTok upload
+- 🔍 Research a topic using AI
+- ✍️ Generate a podcast script
+- 🤖 Generate a TikTok caption
+- 🎤 Convert the script into speech
+- 🎬 Render a subtitle video
+- 📱 Automatically upload the final video to TikTok Studio
 
 The goal is to reduce the manual effort required to transform an idea into a ready-to-publish short-form podcast.
 
@@ -124,16 +124,16 @@ The goal is to reduce the manual effort required to transform an idea into a rea
 ```
 app/
 │
-├── agents/            # AI agents
-├── api/               # FastAPI endpoints
-├── auth/              # TikTok authentication
-├── services/          # Business logic
-├── utils/             # Shared utilities
-├── video_files/       # Generated videos
-├── rss_files/         # RSS data
+├── agents/          # AI agents
+├── api/             # FastAPI routes
+├── auth/            # TikTok authentication
+├── services/        # Business logic
+├── utils/           # Shared utilities
+├── video_files/     # Generated videos
+├── rss_files/       # RSS feeds
 │
-├── main.py
-│
+└── main.py
+
 scripts/
 └── tiktok_uploader.py
 ```
@@ -142,21 +142,21 @@ scripts/
 
 # 🚀 Installation
 
-Clone the repository
+## Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/PodFlow-AI.git
+git clone https://github.com/dachi01-afk/PodFlow-Ai.git
 
-cd PodFlow-AI
+cd PodFlow-Ai
 ```
 
-Create a virtual environment
+## Create a virtual environment
 
 ```bash
 python -m venv .venv
 ```
 
-Activate it
+## Activate the environment
 
 ### Windows
 
@@ -170,23 +170,27 @@ Activate it
 source .venv/bin/activate
 ```
 
-Install dependencies
+## Install Python dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Install Playwright browsers
+## Install Playwright
 
 ```bash
-playwright install
+playwright install chromium
 ```
+
+## Install FFmpeg
+
+Make sure FFmpeg is installed and available in your system PATH.
 
 ---
 
-# ⚙ Environment Variables
+# ⚙️ Environment Variables
 
-Create a `.env` file.
+Create a `.env` file in the project root.
 
 ```env
 SUPABASE_URL=
@@ -199,32 +203,34 @@ AGNES_API_KEY=
 
 ELEVENLABS_API_KEY=
 
-REDIS_URL=
-
 OPENROUTER_API_KEY=
+
+REDIS_URL=
 ```
 
 ---
 
 # 📱 TikTok Automation Setup
 
-PodFlow AI uploads videos using Playwright and a valid TikTok authentication session.
+PodFlow AI uploads videos using Playwright and an authenticated TikTok session.
 
-## 1. Export your TikTok cookies
+## Step 1 — Export TikTok Cookies
 
-Export your authenticated TikTok cookies and save them as:
+Export your TikTok cookies after logging into TikTok Studio.
+
+Save them as:
 
 ```
 app/auth/www_tiktok_com_cookies.json
 ```
 
-A template is provided:
+A template file is included:
 
 ```
 app/auth/www_tiktok_com_cookies_example.json
 ```
 
-## 2. Keep authentication private
+## Step 2 — Keep Credentials Private
 
 The following files should **never** be committed:
 
@@ -232,33 +238,31 @@ The following files should **never** be committed:
 - `app/auth/www_tiktok_com_cookies.json`
 - `app/auth/chrome_profile/`
 
-These files are already included in `.gitignore`.
+These files are already ignored by Git.
 
 ---
 
-# ▶ Running
+# ▶️ Running the Project
 
 Start Redis (or Memurai).
 
-Start FastAPI
+Run the FastAPI server:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Start Celery
+Start the Celery worker:
 
 ```bash
 celery -A app.celery_app worker --pool=solo -l info
 ```
 
-Open the frontend and start generating podcast episodes.
+Open the frontend and begin generating podcast episodes.
 
 ---
 
 # 🔄 Workflow
-
-Current production workflow
 
 ```
 Generate Topic
@@ -286,7 +290,7 @@ TikTok Upload
 
 # 🌐 API
 
-Main endpoints include:
+Main endpoints:
 
 ```
 POST /api/pipeline/research
@@ -318,54 +322,55 @@ Coming soon.
 
 ---
 
-# 🛣 Roadmap
+# 🛣️ Roadmap
 
-- [x] AI topic research
-- [x] AI podcast script generation
-- [x] AI-generated TikTok captions
-- [x] ElevenLabs voice generation
-- [x] Automatic video rendering
-- [x] Automated TikTok Studio upload
+## Completed
 
-Future improvements
+- ✅ AI topic research
+- ✅ AI podcast script generation
+- ✅ AI-generated TikTok captions
+- ✅ ElevenLabs voice generation
+- ✅ Automatic video rendering
+- ✅ Automated TikTok Studio upload
+
+## Planned
 
 - [ ] AI-generated hashtags
 - [ ] Multi-platform publishing
 - [ ] YouTube Shorts support
 - [ ] Instagram Reels support
+- [ ] Spotify publishing
 - [ ] Automatic scheduling
 - [ ] Analytics dashboard
-- [ ] Spotify publishing
 
 ---
 
 # 🔒 Security
 
-This project requires authentication for TikTok automation.
+This project requires authenticated credentials for TikTok automation.
 
 Never commit:
 
 - `.env`
-- TikTok cookie files containing real credentials
-- Browser profiles
 - API keys
+- Browser profiles
+- TikTok cookies containing real credentials
 
-Use the provided cookie template file as a reference when setting up a new environment.
+A cookie template is included for reference.
 
 ---
 
 # 🤝 Contributing
 
-Contributions are welcome!
-
-If you'd like to contribute:
+Contributions are welcome.
 
 1. Fork the repository.
 2. Create a feature branch.
 3. Commit your changes.
-4. Open a Pull Request.
+4. Push your branch.
+5. Open a Pull Request.
 
-Please open an issue before submitting large feature changes.
+For significant feature additions or architectural changes, please open an issue first.
 
 ---
 
