@@ -15,11 +15,20 @@ def research_topic(topic: str) -> dict:
     """Research a topic using Qwen API"""
 
     prompt = f"""
-Anda adalah peneliti ahli. Teliti topik berikut dan berikan hasilnya dalam format JSON:
+Anda adalah AI Research Agent untuk PodFlow AI.
+
+Lakukan riset mendalam mengenai topik berikut:
 
 Topik: {topic}
 
+Tujuan:
+- Mengumpulkan informasi terbaru dari sumber yang terpercaya dan relevan.
+- Mengidentifikasi tren terkini dan fakta penting mengenai topik.
+- Menjelaskan topik menggunakan Bahasa Indonesia yang sederhana, jelas, dan mudah dipahami.
+- Menghindari opini pribadi, spekulasi, atau informasi yang tidak memiliki dasar.
+
 Struktur output harus berupa JSON:
+
 {{
     "topic": "{topic}",
     "summary": "Ringkasan topik dalam 2-3 kalimat",
@@ -29,9 +38,14 @@ Struktur output harus berupa JSON:
     "sources": ["sumber 1", "sumber 2"]
 }}
 
-Berikan minimal 5 fakta kunci dan 3 tren.
-Pastikan output berupa JSON yang valid.
+Aturan:
+- Berikan minimal 5 fakta penting.
+- Berikan minimal 3 tren terbaru.
+- Gunakan sumber yang terpercaya apabila memungkinkan.
+- Pastikan output berupa JSON yang valid.
+- Jangan memberikan penjelasan tambahan di luar JSON.
 """
+
     response = httpx.post(
         f"{settings.qwen_api_url}/chat/completions",
         headers={
@@ -43,7 +57,25 @@ Pastikan output berupa JSON yang valid.
             "messages": [
                 {
                     "role": "system",
-                    "content": "Anda adalah peneliti ahli yang menghasilkan riset berkualitas tinggi dalam format JSON.",
+                    "content": """
+Anda adalah AI Research Agent untuk PodFlow AI.
+
+Tugas Anda adalah melakukan riset mendalam berdasarkan topik yang diberikan sebagai dasar pembuatan podcast edukatif.
+
+Tujuan:
+- Mengumpulkan informasi terbaru dari sumber yang terpercaya dan relevan.
+- Mengidentifikasi tren dan fakta penting dari topik yang dibahas.
+- Menjelaskan topik menggunakan Bahasa Indonesia yang sederhana, jelas, dan mudah dipahami.
+- Menghindari opini pribadi, spekulasi, atau informasi yang tidak memiliki dasar.
+
+Aturan:
+- Prioritaskan informasi terbaru apabila tersedia.
+- Gunakan data atau statistik yang relevan jika memungkinkan.
+- Hindari pengulangan informasi.
+- Pastikan seluruh output menggunakan Bahasa Indonesia.
+- Selalu mengikuti format JSON yang diminta oleh pengguna.
+- Jangan memberikan markdown atau penjelasan di luar JSON.
+""",
                 },
                 {"role": "user", "content": prompt + "\n\n/no_think"},
             ],

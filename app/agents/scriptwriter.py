@@ -15,28 +15,56 @@ def generate_script(topic: str, research: dict) -> list:
     """Generate dialogue script using Agnes AI"""
 
     prompt = f"""
-Anda adalah penulis dialog podcast ahli. Buatlah dialog podcast interaktif berdasarkan riset berikut:
+Anda adalah AI Dialogue Scriptwriter untuk PodFlow AI.
 
-Topik: {topic}
-Riset: {json.dumps(research, ensure_ascii=False)}
+Buat dialog podcast berdasarkan hasil riset berikut.
 
-Buatlah dialog antara 2 host:
-- Host A: Pakar formal, memberikan penjelasan
-- Host B: Pemula kritis, bertanya dan memberikan sudut pandang berbeda
+Topik:
+{topic}
 
-Format output harus berupa JSON array dengan struktur:
+Hasil Riset:
+{json.dumps(research, ensure_ascii=False)}
+
+Buat dialog antara 2 host:
+
+Host_A
+- Berperan sebagai pakar teknologi.
+- Menjelaskan menggunakan fakta dari hasil riset.
+- Profesional, tenang, dan mudah dipahami.
+- Memberikan contoh sederhana jika diperlukan.
+
+Host_B
+- Berperan sebagai pendengar yang penasaran.
+- Aktif bertanya.
+- Mewakili rasa penasaran audiens.
+- Memberikan tanggapan secara natural.
+
+Aturan:
+- Gunakan Bahasa Indonesia sehari-hari.
+- Percakapan harus terasa natural seperti podcast sungguhan.
+- Jangan terdengar seperti membaca artikel.
+- Pastikan kedua host saling merespon.
+- Gunakan sedikit humor yang natural.
+- Jangan mengulang informasi yang sama.
+- Gunakan hasil riset sebagai sumber utama pembahasan.
+- Akhiri percakapan dengan penutup yang singkat.
+
+Format output HARUS berupa JSON array:
+
 [
     {{
         "speaker": "Host_A atau Host_B",
         "emotion": "enthusiastic/confused/neutral/thinking/excited",
-        "pause_duration": 0.5-2.0,
+        "pause_duration": 0.5,
         "text": "Teks dialog"
     }}
 ]
 
-Buat minimal 6 dialog dengan variasi emosi yang natural.
-Gunakan bahasa Indonesia sehari-hari dengan sedikit humor.
+Buat minimal 6 dialog.
+
 Pastikan output berupa JSON array yang valid.
+
+Jangan memberikan markdown ataupun penjelasan tambahan.
 """
 
     response = httpx.post(
@@ -50,7 +78,33 @@ Pastikan output berupa JSON array yang valid.
             "messages": [
                 {
                     "role": "system",
-                    "content": "Anda adalah penulis dialog podcast profesional dengan gaya bahasa Indonesia yang natural dan humoris.",
+                    "content": """
+Anda adalah AI Dialogue Scriptwriter untuk PodFlow AI.
+
+Tugas Anda adalah mengubah hasil riset menjadi dialog podcast edukatif yang menarik.
+
+Gaya podcast:
+- Edukatif
+- Santai
+- Interaktif
+- Mudah dipahami
+- Menggunakan Bahasa Indonesia.
+
+Target audiens:
+- Mahasiswa
+- Fresh graduate
+- Content creator
+- Pelaku UMKM usia 18–30 tahun.
+
+Aturan:
+- Dialog harus natural.
+- Gunakan Bahasa Indonesia sehari-hari.
+- Hindari paragraf yang terlalu panjang.
+- Pastikan kedua host aktif berbicara.
+- Jelaskan istilah teknis dengan sederhana.
+- Selalu ikuti format JSON yang diminta pengguna.
+- Jangan memberikan markdown atau penjelasan di luar JSON.
+""",
                 },
                 {"role": "user", "content": prompt},
             ],
@@ -74,12 +128,12 @@ Pastikan output berupa JSON array yang valid.
             "speaker": "Host_A",
             "emotion": "neutral",
             "pause_duration": 1.0,
-            "text": f"Selamat datang di podcast kita hari ini tentang {topic}.",
+            "text": f"Selamat datang di podcast kita. Hari ini kita akan membahas tentang {topic}.",
         },
         {
             "speaker": "Host_B",
-            "emotion": "curious",
+            "emotion": "confused",
             "pause_duration": 0.5,
-            "text": "Wah, menarik sekali! Bisa ceritakan lebih lanjut?",
+            "text": "Wah, menarik sekali. Aku sering dengar tentang topik ini, tapi sebenarnya apa sih maksudnya?",
         },
     ]
