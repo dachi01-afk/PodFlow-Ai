@@ -31,139 +31,139 @@
     {% endif %}
 
     <!-- Pipeline Progress -->
-    <div class="bg-gray-800 p-4 rounded-lg">
-        <h3 class="text-lg font-bold mb-4">Pipeline Progress</h3>
+    {% set current_step = {
+        'pending': 0,
+        'researching': 1,
+        'writing': 2,
+        'producing': 3,
+        'publishing': 4,
+        'completed': 5,
+        'failed': -1
+    }.get(episode.status, 0) %}
+
+    {% set progress_width = {
+        -1: "0%",
+        0: "0%",
+        1: "25%",
+        2: "50%",
+        3: "75%",
+        4: "95%",
+        5: "100%"
+    }.get(current_step, "0%") %}
+
+    <div class="bg-gray-800 p-6 rounded-lg">
+        <h3 class="text-xl font-bold mb-6">🚀 Pipeline Progress</h3>
+
         <div class="flex items-center justify-between">
-            <div class="flex flex-col items-center">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center 
-                    {% if episode.status in ['researching', 'writing', 'producing', 'publishing', 'completed'] %}bg-green-600{% else %}bg-gray-600{% endif %}">
-                    {% if episode.status in ['researching', 'writing', 'producing', 'publishing', 'completed'] %}✓{% else %}1{% endif %}
+
+            <!-- Research -->
+            <div class="flex flex-col items-center w-24">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold
+                    {% if current_step > 1 %}
+                        bg-green-600
+                    {% elif current_step == 1 %}
+                        bg-yellow-500 ring-4 ring-yellow-300/30 animate-pulse
+                    {% else %}
+                        bg-gray-600
+                    {% endif %}">
+                    {% if current_step > 1 %}
+                        ✓
+                    {% elif current_step == 1 %}
+                        ⏳
+                    {% else %}
+                        1
+                    {% endif %}
                 </div>
-                <span class="text-sm mt-2">Research</span>
+                <span class="mt-2 text-sm text-center">🔍 Research</span>
             </div>
-            <div class="flex-1 h-1 mx-2 {% if episode.status in ['writing', 'producing', 'publishing', 'completed'] %}bg-green-600{% else %}bg-gray-600{% endif %}"></div>
-            <div class="flex flex-col items-center">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center 
-                    {% if episode.status in ['writing', 'producing', 'publishing', 'completed'] %}bg-green-600{% else %}bg-gray-600{% endif %}">
-                    {% if episode.status in ['writing', 'producing', 'publishing', 'completed'] %}✓{% else %}2{% endif %}
+
+            <div class="flex-1 h-2 rounded-full mx-2 {% if current_step > 1 %}bg-green-600{% else %}bg-gray-600{% endif %}"></div>
+
+            <!-- Script -->
+            <div class="flex flex-col items-center w-24">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold
+                    {% if current_step > 2 %}
+                        bg-green-600
+                    {% elif current_step == 2 %}
+                        bg-yellow-500 ring-4 ring-yellow-300/30 animate-pulse
+                    {% else %}
+                        bg-gray-600
+                    {% endif %}">
+                    {% if current_step > 2 %}
+                        ✓
+                    {% elif current_step == 2 %}
+                        ⏳
+                    {% else %}
+                        2
+                    {% endif %}
                 </div>
-                <span class="text-sm mt-2">Script</span>
+                <span class="mt-2 text-sm text-center">✍️ Script</span>
             </div>
-            <div class="flex-1 h-1 mx-2 {% if episode.status in ['producing', 'publishing', 'completed'] %}bg-green-600{% else %}bg-gray-600{% endif %}"></div>
-            <div class="flex flex-col items-center">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center 
-                    {% if episode.status in ['producing', 'publishing', 'completed'] %}bg-green-600{% elif episode.status == 'researching' %}bg-yellow-600 animate-pulse{% else %}bg-gray-600{% endif %}">
-                    {% if episode.status in ['producing', 'publishing', 'completed'] %}✓{% else %}3{% endif %}
+
+            <div class="flex-1 h-2 rounded-full mx-2 {% if current_step > 2 %}bg-green-600{% else %}bg-gray-600{% endif %}"></div>
+
+            <!-- Audio -->
+            <div class="flex flex-col items-center w-24">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold
+                    {% if current_step > 3 %}
+                        bg-green-600
+                    {% elif current_step == 3 %}
+                        bg-yellow-500 ring-4 ring-yellow-300/30 animate-pulse
+                    {% else %}
+                        bg-gray-600
+                    {% endif %}">
+                    {% if current_step > 3 %}
+                        ✓
+                    {% elif current_step == 3 %}
+                        ⏳
+                    {% else %}
+                        3
+                    {% endif %}
                 </div>
-                <span class="text-sm mt-2">Audio</span>
+                <span class="mt-2 text-sm text-center">🎵 Audio</span>
             </div>
-            <div class="flex-1 h-1 mx-2 {% if episode.status in ['publishing', 'completed'] %}bg-green-600{% else %}bg-gray-600{% endif %}"></div>
-            <div class="flex flex-col items-center">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center 
-                    {% if episode.status in ['publishing', 'completed'] %}bg-green-600{% else %}bg-gray-600{% endif %}">
-                    {% if episode.status in ['publishing', 'completed'] %}✓{% else %}4{% endif %}
+
+            <div class="flex-1 h-2 rounded-full mx-2 {% if current_step > 3 %}bg-green-600{% else %}bg-gray-600{% endif %}"></div>
+
+            <!-- Publish -->
+            <div class="flex flex-col items-center w-24">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold
+                    {% if current_step > 4 %}
+                        bg-green-600
+                    {% elif current_step == 4 %}
+                        bg-yellow-500 ring-4 ring-yellow-300/30 animate-pulse
+                    {% else %}
+                        bg-gray-600
+                    {% endif %}">
+                    {% if current_step > 4 %}
+                        ✓
+                    {% elif current_step == 4 %}
+                        ⏳
+                    {% else %}
+                        4
+                    {% endif %}
                 </div>
-                <span class="text-sm mt-2">Publish</span>
+                <span class="mt-2 text-sm text-center">📤 Publish</span>
+            </div>
+
+        </div>
+
+        <div class="mt-8">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-gray-400 text-sm">Current Status</span>
+
+                <span class="px-3 py-1 rounded-full bg-purple-600 text-white text-sm font-semibold">
+                    {{ episode.status|replace('_',' ')|title }}
+                </span>
+            </div>
+
+            <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div
+                    style="--progress-width: {{ progress_width }}; width: var(--progress-width);">
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Media Players -->
-    {% if episode.status == 'completed' %}
-    <div class="grid grid-cols-2 gap-6">
-        <!-- Audio Player -->
-        {% if episode.audio_url %}
-        <div class="bg-gray-800 p-4 rounded-lg">
-            <h3 class="text-lg font-bold mb-4">🎵 Audio Player</h3>
-            <audio controls class="w-full">
-                <source src="{{ episode.audio_url }}" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-            <div class="mt-4 flex space-x-2">
-                <a href="{{ episode.audio_url }}" download class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm flex-1 text-center">📥 Download MP3</a>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Video Player -->
-        {% if episode.metadata and episode.metadata.get('video_url') %}
-        <div class="bg-gray-800 p-4 rounded-lg">
-            <h3 class="text-lg font-bold mb-4">🎬 Video Player</h3>
-            <video controls class="w-full rounded">
-                <source src="{{ episode.metadata.video_url }}" type="video/mp4">
-                Your browser does not support the video element.
-            </video>
-            <div class="mt-4 flex space-x-2">
-                <a href="{{ episode.metadata.video_url }}" download class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm flex-1 text-center">📥 Download MP4</a>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-    {% endif %}
-
-    <!-- Script -->
-    {% if episode.script and episode.script.get('dialogues') %}
-    <div class="bg-gray-800 p-4 rounded-lg">
-        <h3 class="text-lg font-bold mb-4">📝 Script</h3>
-        <div class="space-y-3 max-h-96 overflow-y-auto">
-            {% for dialogue in episode.script.dialogues %}
-            <div class="bg-gray-700 p-3 rounded">
-                <div class="flex items-center mb-2">
-                    <span class="font-bold text-purple-400">{{ dialogue.speaker }}</span>
-                    <span class="text-gray-500 text-sm ml-2">({{ dialogue.emotion }})</span>
-                </div>
-                <p class="text-gray-200">{{ dialogue.text }}</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Metadata -->
-    {% if episode.metadata %}
-    <div class="bg-gray-800 p-4 rounded-lg">
-        <h3 class="text-lg font-bold mb-4">📊 Metadata</h3>
-        
-        {% if episode.metadata.get('title') %}
-        <div class="mb-3">
-            <span class="text-gray-400">Title:</span>
-            <span class="ml-2">{{ episode.metadata.title }}</span>
-        </div>
-        {% endif %}
-
-        {% if episode.metadata.get('description') %}
-        <div class="mb-3">
-            <span class="text-gray-400">Description:</span>
-            <p class="ml-2 text-gray-300 text-sm">{{ episode.metadata.description[:200] }}...</p>
-        </div>
-        {% endif %}
-
-        {% if episode.metadata.get('tags') %}
-        <div class="mb-3">
-            <span class="text-gray-400">Tags:</span>
-            <div class="ml-2 flex flex-wrap gap-2 mt-1">
-                {% for tag in episode.metadata.tags %}
-                <span class="bg-purple-600 px-2 py-1 rounded text-sm">{{ tag }}</span>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
-        {% if episode.metadata.get('show_notes') %}
-        <div class="mb-3">
-            <span class="text-gray-400">Show Notes:</span>
-            <div class="ml-2 bg-gray-700 p-3 rounded text-sm whitespace-pre-wrap">{{ episode.metadata.show_notes }}</div>
-        </div>
-        {% endif %}
-
-        {% if episode.metadata.get('video_url') %}
-        <div class="mb-3">
-            <span class="text-gray-400">Video URL:</span>
-            <a href="{{ episode.metadata.video_url }}" class="ml-2 text-purple-400 hover:underline" target="_blank">{{ episode.metadata.video_url }}</a>
-        </div>
-        {% endif %}
-    </div>
-    {% endif %}
 
     <!-- Actions -->
     <div class="bg-gray-800 p-4 rounded-lg">

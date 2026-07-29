@@ -70,76 +70,6 @@ class VideoComposer:
             os.path.join(assets_dir, "host_b.png")
         )
 
-
-        filter_complex = (
-            "[0:v]"
-            "scale=1080:1920:force_original_aspect_ratio=increase,"
-            "crop=1080:1920,"
-            "gblur=sigma=10"
-            "[bg];"
-
-            "[bg]"
-            "drawbox=x=0:y=0:w=1080:h=1920:"
-            "color=black@0.35:t=fill"
-            "[dark];"
-
-            "[1:v]scale=560:-1[left_glow];"
-            "[2:v]scale=520:-1[left];"
-            "[3:v]scale=635:-1[right_glow];"
-            "[4:v]scale=595:-1[right];"
-
-            "[dark][left_glow]"
-            f"overlay=60:680:enable='{host_a_enable}'"
-            "[tmp1];"
-
-            "[tmp1][right_glow]"
-            f"overlay=480:660:enable='{host_b_enable}'"
-            "[tmp2];"
-
-            "[tmp2][left]"
-            "overlay=80:700"
-            "[tmp3];"
-
-            "[tmp3][right]"
-            "overlay=500:680"
-            "[subtitle0]"
-        )
-
-        if segments:
-            previous = "subtitle0"
-
-            for i, segment in enumerate(segments):
-                text = (
-                    segment["text"]
-                    .replace("\\", "\\\\")
-                    .replace(":", "\\:")
-                    .replace("'", "\\'")
-                )
-
-                current = f"subtitle{i+1}"
-
-                filter_complex += (
-                    ";"
-                    f"[{previous}]"
-                    "drawtext="
-                    "font='Arial':"
-                    f"text='{text}':"
-                    "fontsize=56:"
-                    "fontcolor=white:"
-                    "borderw=5:"
-                    "bordercolor=black:"
-                    "x=(w-text_w)/2:"
-                    "y=1500:"
-                    f"enable='between(t,{segment['start']:.2f},{segment['end']:.2f})'"
-                    f"[{current}]"
-                )
-
-                previous = current
-
-            filter_complex += f";[{previous}]copy[v]"
-        else:
-            filter_complex += ";[subtitle0]copy[v]"
-
         cmd = [
             "ffmpeg",
             "-hide_banner",
@@ -163,7 +93,61 @@ class VideoComposer:
             "-i", audio_path,
 
             "-filter_complex",
-            filter_complex,
+            (
+                # Background
+                "[0:v]"
+                "scale=1080:1920:force_original_aspect_ratio=increase,"
+                "crop=1080:1920,"
+                "gblur=sigma=10"
+                "[bg];"
+
+                # Dark overlay
+                "[bg]"
+                "drawbox=x=0:y=0:w=1080:h=1920:"
+                "color=black@0.35:t=fill"
+                "[dark];"
+
+                # Glow A
+                "[1:v]"
+                "scale=560:-1"
+                "[left_glow];"
+
+                # Avatar A
+                "[2:v]"
+                "scale=520:-1"
+                "[left];"
+
+                # Glow B
+                "[3:v]"
+                "scale=635:-1"
+                "[right_glow];"
+
+                # Avatar B
+                "[4:v]"
+                "scale=595:-1"
+                "[right];"
+
+                # Background
+                "[dark]"
+                "[left_glow]"
+                f"overlay=60:680:enable='{host_a_enable}'"
+                "[tmp1];"
+
+                "[tmp1]"
+                "[right_glow]"
+                f"overlay=480:660:enable='{host_b_enable}'"
+                "[tmp2];"
+
+                "[tmp2]"
+                "[left]"
+                "overlay=80:700"
+                "[tmp3];"
+
+                "[tmp3]"
+                "[right]"
+                "overlay=500:680"
+                "[v]"
+            ),
 
             "-map", "[v]",
             "-map", "5:a",
