@@ -123,7 +123,11 @@ def run_audio_agent(self, episode_id: str, script: dict):
 
         if result.data:
             topic = result.data[0]["topic"]
-        audio_path = generate_episode_audio(dialogues)
+
+        audio_result = generate_episode_audio(dialogues)
+
+        audio_path = audio_result["audio_path"]
+        segments = audio_result["segments"]  # We'll use this in the new renderer
 
         final_audio_path = os.path.join(AUDIO_DIR, f"{episode_id}.mp3")
 
@@ -134,6 +138,7 @@ def run_audio_agent(self, episode_id: str, script: dict):
             audio_path=final_audio_path,
             output_path=video_path,
             title=topic,
+            segments=segments,
         )
 
         audio_url = f"/audio/{episode_id}.mp3"

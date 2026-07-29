@@ -6,8 +6,15 @@
     <language>id</language>
     <itunes:author>Marvel</itunes:author>
     <item>
-      <title>deskripsi dari Universe marvel</title>
+      <title>Film Marvel</title>
       <description/>
+      <enclosure url="/audio/7ff33eb3-2f1e-4fea-bb2e-e1576f7d4d1c.mp3" type="audio/mpeg" length="0"/>
+      <pubDate>2026-07-29T08:11:43.4434+00:00</pubDate>
+      <itunes:duration>00:00</itunes:duration>
+    </item>
+    <item>
+      <title>PodFlow: deskripsi dari Universe marvel</title>
+      <description>Hai semuanya! Hari ini kita akan bahas Marvel Universe, semesta fiksi yang bikin kita semua ngelamun Marvel Universe itu apa sih? Aku pernah denger tapi nggak jelas gimana ceritanya. Apaman itu semesta Marvel Universe itu semesta bersama di mana ratusan karakter superhero, penjahat, dan dunia saling t...</description>
       <enclosure url="/audio/5916b36e-bd11-410a-bd3c-30a81731b51a.mp3" type="audio/mpeg" length="0"/>
       <pubDate>2026-07-28T16:03:19.88277+00:00</pubDate>
       <itunes:duration>00:00</itunes:duration>

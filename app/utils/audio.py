@@ -63,11 +63,14 @@ def generate_waveform_video(
     audio_path: str,
     output_path: str,
     title: str = "AI Generated Podcast",
+    segments=None,
 ) -> str:
+    
     composer = VideoComposer()
 
     return composer.compose(
         audio_path=audio_path,
         output_path=output_path,
         title=title,
+        segments=segments,
     )

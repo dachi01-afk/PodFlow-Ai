@@ -1,8 +1,5 @@
 import os
 import subprocess
-import tempfile
-
-from PIL import Image, ImageDraw, ImageFont
 
 
 class VideoComposer:
@@ -11,135 +8,191 @@ class VideoComposer:
         self.height = 1920
         self.fps = 30
 
-    def create_background(self, title: str):
-        """
-        Creates a background PNG with the episode title.
-        """
-
-        img = Image.new(
-            "RGB",
-            (self.width, self.height),
-            (20, 20, 20),
-        )
-
-        draw = ImageDraw.Draw(img)
-
-        font_path = r"C:\Windows\Fonts\arial.ttf"
-
-        try:
-            font = ImageFont.truetype(font_path, 72)
-        except Exception:
-            font = ImageFont.load_default()
-
-        # Wrap title if it's too long
-        words = title.split()
-        lines = []
-        current = ""
-
-        for word in words:
-            test = current + (" " if current else "") + word
-
-            if draw.textlength(test, font=font) < self.width - 120:
-                current = test
-            else:
-                lines.append(current)
-                current = word
-
-        if current:
-            lines.append(current)
-
-        line_height = 90
-        start_y = 120
-
-        for line in lines:
-            bbox = draw.textbbox((0, 0), line, font=font)
-            text_width = bbox[2] - bbox[0]
-
-            x = (self.width - text_width) // 2
-
-            draw.text(
-                (x, start_y),
-                line,
-                fill="white",
-                font=font,
-            )
-
-            start_y += line_height
-
-        background_path = tempfile.mktemp(suffix=".png")
-        img.save(background_path)
-
-        return background_path
-
     def compose(
         self,
         audio_path,
         output_path,
         title="AI Generated Podcast",
+        segments=None,
     ):
 
-        background = self.create_background(title)
+        host_a_enable = []
+        host_b_enable = []
 
-        try:
+        if segments:
+            for segment in segments:
+                expr = f"between(t,{segment['start']:.2f},{segment['end']:.2f})"
 
-            cmd = [
-                "ffmpeg",
-                "-hide_banner",
-                "-y",
+                if segment["speaker"] == "Host_A":
+                    host_a_enable.append(expr)
+                else:
+                    host_b_enable.append(expr)
 
-                # background
-                "-loop", "1",
-                "-i", background,
+        host_a_enable = "+".join(host_a_enable) or "0"
+        host_b_enable = "+".join(host_b_enable) or "0"
+        
+        if segments:
+            print("\n========== SPEAKER TIMELINE ==========")
 
-                # audio
-                "-i", audio_path,
+            for segment in segments:
+                print(
+                    f"{segment['speaker']} | "
+                    f"{segment['start']:.2f}s -> "
+                    f"{segment['end']:.2f}s | "
+                    f"{segment['text']}"
+                )
 
-                "-filter_complex",
-                (
-                    "[1:a]"
-                    f"showwaves=s={self.width}x600:"
-                    f"mode=cline:"
-                    f"rate={self.fps}:"
-                    "colors=0x00D4FF"
-                    "[waves];"
+            print("======================================\n")
 
-                    "[0:v][waves]"
-                    "overlay=0:(H-h)/2"
-                    "[v]"
-                ),
+        assets_dir = os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "assets",
+        )
 
-                "-map", "[v]",
-                "-map", "1:a",
+        background = os.path.abspath(
+            os.path.join(assets_dir, "background.jpg")
+        )
 
-                "-c:v", "libx264",
-                "-pix_fmt", "yuv420p",
-                "-preset", "medium",
+        host_a_glow = os.path.abspath(
+            os.path.join(assets_dir, "host_a_glow.png")
+        )
 
-                "-c:a", "aac",
+        host_a = os.path.abspath(
+            os.path.join(assets_dir, "host_a.png")
+        )
 
-                "-shortest",
+        host_b_glow = os.path.abspath(
+            os.path.join(assets_dir, "host_b_glow.png")
+        )
 
-                output_path,
-            ]
+        host_b = os.path.abspath(
+            os.path.join(assets_dir, "host_b.png")
+        )
 
-            print("\nRunning FFmpeg...\n")
-            print(" ".join(cmd))
-            print()
 
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-            )
+        filter_complex = (
+            "[0:v]"
+            "scale=1080:1920:force_original_aspect_ratio=increase,"
+            "crop=1080:1920,"
+            "gblur=sigma=10"
+            "[bg];"
 
-            print(result.stdout)
-            print(result.stderr)
+            "[bg]"
+            "drawbox=x=0:y=0:w=1080:h=1920:"
+            "color=black@0.35:t=fill"
+            "[dark];"
 
-            result.check_returncode()
+            "[1:v]scale=560:-1[left_glow];"
+            "[2:v]scale=520:-1[left];"
+            "[3:v]scale=635:-1[right_glow];"
+            "[4:v]scale=595:-1[right];"
 
-        finally:
+            "[dark][left_glow]"
+            f"overlay=60:680:enable='{host_a_enable}'"
+            "[tmp1];"
 
-            if os.path.exists(background):
-                os.remove(background)
+            "[tmp1][right_glow]"
+            f"overlay=480:660:enable='{host_b_enable}'"
+            "[tmp2];"
+
+            "[tmp2][left]"
+            "overlay=80:700"
+            "[tmp3];"
+
+            "[tmp3][right]"
+            "overlay=500:680"
+            "[subtitle0]"
+        )
+
+        if segments:
+            previous = "subtitle0"
+
+            for i, segment in enumerate(segments):
+                text = (
+                    segment["text"]
+                    .replace("\\", "\\\\")
+                    .replace(":", "\\:")
+                    .replace("'", "\\'")
+                )
+
+                current = f"subtitle{i+1}"
+
+                filter_complex += (
+                    ";"
+                    f"[{previous}]"
+                    "drawtext="
+                    "font='Arial':"
+                    f"text='{text}':"
+                    "fontsize=56:"
+                    "fontcolor=white:"
+                    "borderw=5:"
+                    "bordercolor=black:"
+                    "x=(w-text_w)/2:"
+                    "y=1500:"
+                    f"enable='between(t,{segment['start']:.2f},{segment['end']:.2f})'"
+                    f"[{current}]"
+                )
+
+                previous = current
+
+            filter_complex += f";[{previous}]copy[v]"
+        else:
+            filter_complex += ";[subtitle0]copy[v]"
+
+        cmd = [
+            "ffmpeg",
+            "-hide_banner",
+            "-y",
+
+            "-loop", "1",
+            "-i", background,
+
+            "-loop", "1",
+            "-i", host_a_glow,
+
+            "-loop", "1",
+            "-i", host_a,
+
+            "-loop", "1",
+            "-i", host_b_glow,
+
+            "-loop", "1",
+            "-i", host_b,
+
+            "-i", audio_path,
+
+            "-filter_complex",
+            filter_complex,
+
+            "-map", "[v]",
+            "-map", "5:a",
+
+            "-c:v", "libx264",
+            "-preset", "veryfast",
+            "-pix_fmt", "yuv420p",
+
+            "-c:a", "aac",
+            "-b:a", "192k",
+
+            "-shortest",
+
+            output_path,
+        ]
+
+        print("\nRunning FFmpeg...\n")
+        print(" ".join(cmd))
+        print()
+
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+        )
+
+        print(result.stdout)
+        print(result.stderr)
+
+        result.check_returncode()
 
         return output_path
