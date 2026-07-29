@@ -20,8 +20,12 @@ class Settings(BaseSettings):
     # Redis (untuk Celery)
     redis_url: str = "redis://localhost:6379/0"
     
+    # Optional keys (may be present in .env but not required)
+    huggingface_api_key: str = ""
+
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 @lru_cache()
 def get_settings() -> Settings:

@@ -1,10 +1,8 @@
 from celery_app import celery_app
 from app.core.supabase_client import get_supabase
-from app.agents.research import research_topic
-from app.agents.scriptwriter import generate_script
 from app.agents.audio import generate_episode_audio
-from app.agents.distribution import generate_metadata, publish_episode
 from app.utils.audio import generate_waveform_video
+from app.crew.tools import ResearchTool, ScriptTool, MetadataTool, PublishTool
 import os
 from datetime import datetime, timezone
 
@@ -15,7 +13,6 @@ os.makedirs(VIDEO_DIR, exist_ok=True)
 
 
 def _fail_episode(episode_id: str, error: str):
-    """Mark episode as failed with error message"""
     supabase = get_supabase()
     supabase.table("episodes").update({
         "status": "failed",
@@ -23,82 +20,40 @@ def _fail_episode(episode_id: str, error: str):
     }).eq("id", episode_id).execute()
 
 
-@celery_app.task(bind=True, name="app.tasks.pipeline.run_research_agent")
-def run_research_agent(self, episode_id: str):
-    """Agent 1: Research - Riset topik menggunakan Qwen API"""
+def _update_status(episode_id: str, status: str, extra: dict = None):
+    supabase = get_supabase()
+    data = {"status": status}
+    if extra:
+        data.update(extra)
+    supabase.table("episodes").update(data).eq("id", episode_id).execute()
+
+
+@celery_app.task(bind=True, name="app.tasks.pipeline.run_pipeline")
+def run_pipeline(self, episode_id: str):
+    """Run full PodFlow pipeline using CrewAI-style orchestration (sequential agents)"""
     supabase = get_supabase()
 
     try:
-        result = supabase.table("episodes").select("topic").eq("id", episode_id).execute()
-        if not result.data:
+        episode = supabase.table("episodes").select("*").eq("id", episode_id).execute()
+        if not episode.data:
             raise Exception(f"Episode {episode_id} not found")
 
-        topic = result.data[0]["topic"]
+        episode = episode.data[0]
+        topic = episode["topic"]
 
-        supabase.table("episodes").update({"status": "researching"}).eq(
-            "id", episode_id
-        ).execute()
+        # === Agent 1: Research (Qwen) ===
+        _update_status(episode_id, "researching")
+        research_result = ResearchTool().run(topic=topic)
+        _update_status(episode_id, "writing", {"metadata": {"research": research_result}})
 
-        research_result = research_topic(topic)
+        # === Agent 2: Scriptwriter (Agnes AI) ===
+        _update_status(episode_id, "writing")
+        script_result = ScriptTool().run(topic=topic, research=research_result)
+        _update_status(episode_id, "producing", {"script": {"dialogues": script_result}})
 
-        supabase.table("episodes").update(
-            {"metadata": {"research": research_result}, "status": "writing"}
-        ).eq("id", episode_id).execute()
-
-        celery_app.send_task(
-            "app.tasks.pipeline.run_scriptwriter_agent",
-            args=[episode_id, research_result],
-        )
-        return {"episode_id": episode_id, "status": "research_done", "research": research_result}
-    except Exception as e:
-        _fail_episode(episode_id, str(e))
-        raise
-
-
-@celery_app.task(bind=True, name="app.tasks.pipeline.run_scriptwriter_agent")
-def run_scriptwriter_agent(self, episode_id: str, research: dict):
-    """Agent 2: Scriptwriter - Menulis dialog podcast menggunakan Agnes AI"""
-    supabase = get_supabase()
-
-    try:
-        result = supabase.table("episodes").select("topic").eq("id", episode_id).execute()
-        if not result.data:
-            raise Exception(f"Episode {episode_id} not found")
-
-        topic = result.data[0]["topic"]
-
-        supabase.table("episodes").update({"status": "writing"}).eq(
-            "id", episode_id
-        ).execute()
-
-        script_result = generate_script(topic, research)
-
-        supabase.table("episodes").update(
-            {"script": {"dialogues": script_result}, "status": "producing"}
-        ).eq("id", episode_id).execute()
-
-        celery_app.send_task(
-            "app.tasks.pipeline.run_audio_agent",
-            args=[episode_id, {"dialogues": script_result}],
-        )
-        return {"episode_id": episode_id, "status": "script_done", "script": {"dialogues": script_result}}
-    except Exception as e:
-        _fail_episode(episode_id, str(e))
-        raise
-
-
-@celery_app.task(bind=True, name="app.tasks.pipeline.run_audio_agent")
-def run_audio_agent(self, episode_id: str, script: dict):
-    """Agent 3: Audio - Generate audio + waveform video dari script"""
-    supabase = get_supabase()
-
-    try:
-        supabase.table("episodes").update({"status": "producing"}).eq(
-            "id", episode_id
-        ).execute()
-
-        dialogues = script.get("dialogues", [])
-        audio_path = generate_episode_audio(dialogues)
+        # === Agent 3: Audio (ElevenLabs + FFmpeg) ===
+        _update_status(episode_id, "producing")
+        audio_path = generate_episode_audio(script_result)
 
         final_audio_path = os.path.join(AUDIO_DIR, f"{episode_id}.mp3")
         os.rename(audio_path, final_audio_path)
@@ -109,56 +64,38 @@ def run_audio_agent(self, episode_id: str, script: dict):
         audio_url = f"/audio/{episode_id}.mp3"
         video_url = f"/video/{episode_id}.mp4"
 
-        supabase.table("episodes").update({
+        _update_status(episode_id, "publishing", {
             "audio_url": audio_url,
             "metadata": {"video_url": video_url},
-            "status": "publishing",
-        }).eq("id", episode_id).execute()
+        })
 
-        celery_app.send_task(
-            "app.tasks.pipeline.run_distribution_agent",
-            args=[episode_id, {"audio_url": audio_url, "video_url": video_url}],
-        )
-        return {"episode_id": episode_id, "status": "audio_done", "audio_url": audio_url, "video_url": video_url}
-    except Exception as e:
-        _fail_episode(episode_id, str(e))
-        raise
-
-
-@celery_app.task(bind=True, name="app.tasks.pipeline.run_distribution_agent")
-def run_distribution_agent(self, episode_id: str, audio: dict):
-    """Agent 4: Distribution - Generate metadata dan RSS feed"""
-    supabase = get_supabase()
-
-    try:
-        supabase.table("episodes").update({"status": "publishing"}).eq(
-            "id", episode_id
-        ).execute()
-
-        result = supabase.table("episodes").select("topic, script, metadata").eq("id", episode_id).execute()
-        if not result.data:
-            raise Exception(f"Episode {episode_id} not found")
-
-        episode = result.data[0]
-        topic = episode["topic"]
-        script = episode.get("script", {})
+        # === Agent 4: Distribution (Metadata + RSS) ===
+        _update_status(episode_id, "publishing")
+        episode = supabase.table("episodes").select("topic, script, metadata").eq("id", episode_id).execute()
+        episode = episode.data[0]
         old_metadata = episode.get("metadata") or {}
 
-        metadata = generate_metadata(topic, script)
-
+        metadata = MetadataTool().run(topic=topic, script={"dialogues": script_result})
         if "video_url" in old_metadata:
             metadata["video_url"] = old_metadata["video_url"]
 
-        audio_url = audio.get("audio_url", "")
-        rss_path = publish_episode(episode_id, audio_url, metadata)
+        rss_path = PublishTool().run(episode_id=episode_id, audio_url=audio_url, metadata=metadata)
 
-        supabase.table("episodes").update({
+        _update_status(episode_id, "completed", {
             "metadata": metadata,
-            "status": "completed",
             "completed_at": datetime.now(timezone.utc).isoformat(),
-        }).eq("id", episode_id).execute()
+        })
 
-        return {"episode_id": episode_id, "status": "completed", "metadata": metadata, "rss_path": rss_path}
+        return {
+            "episode_id": episode_id,
+            "status": "completed",
+            "research": research_result,
+            "script": script_result,
+            "audio_url": audio_url,
+            "video_url": video_url,
+            "rss_path": rss_path,
+        }
+
     except Exception as e:
         _fail_episode(episode_id, str(e))
         raise

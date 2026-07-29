@@ -23,11 +23,7 @@ async def start_pipeline(episode_id: str):
     if episode["status"] != "pending":
         raise HTTPException(status_code=400, detail="Episode already processing")
 
-    supabase.table("episodes").update({"status": "researching"}).eq(
-        "id", episode_id
-    ).execute()
-
-    celery_app.send_task("app.tasks.pipeline.run_research_agent", args=[episode_id])
+    celery_app.send_task("app.tasks.pipeline.run_pipeline", args=[episode_id])
 
     return {"status": "started", "episode_id": episode_id}
 

@@ -12,7 +12,6 @@ __pycache__/
 .venv/
 venv/
 .env
-.env.example
 
 # Package directories
 *.egg-info/
@@ -114,6 +113,11 @@ htmlcov/
 # Virtual environments
 .venv/
 env/
+
+# Generated audio, video & RSS files (binary artifacts)
+app/audio_files/
+app/video_files/
+app/rss_files/
 
 # Large binary files (audio files)
 *.mp3
